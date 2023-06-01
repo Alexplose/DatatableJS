@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;net451;net452;net46;net461;net462;net47;net471;net472;net48</TargetFrameworks>
+    <TargetFrameworks>.netcoreapp7</TargetFrameworks>
     <Description>DatatableJS is a helper to create a grid with Jquery Datatables and provides a request to retrive data generically from a repo. It possible to use many Jquery Datatables features with Html Helper. It gives serverside or client side options.</Description>
     <Authors>Emrah KONDUR</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

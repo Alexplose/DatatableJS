@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>    
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>    
+    <TargetFrameworks>.net7.0</TargetFrameworks>    
     <Authors>Emrah KONDUR</Authors>    
     <Company>Emrah KONDUR</Company>    
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>    

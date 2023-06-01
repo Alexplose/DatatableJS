@@ -9,6 +9,7 @@ namespace DatatableJS.Data
     public static class ExpressionBuilder
     {
         private static readonly MethodInfo containsMethod = typeof(string).GetMethod("Contains", new Type[] { typeof(string) });
+        private static readonly MethodInfo containsMethodIgnoreCase = typeof(string).GetMethod("Contains", new Type[] { typeof(string), typeof(StringComparison) });
         private static readonly MethodInfo startsWithMethod = typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) });
         private static readonly MethodInfo endsWithMethod = typeof(string).GetMethod("EndsWith", new Type[] { typeof(string) });
 
@@ -30,7 +31,13 @@ namespace DatatableJS.Data
 
         private static Expression GetExpression(ParameterExpression param, FilterDef filter)
         {
-            MemberExpression member = Expression.Property(param, filter.Field);
+            Expression member = param;
+
+            foreach (var memberName in filter.Field.Split('.'))
+            {
+                member = Expression.PropertyOrField(member, memberName);
+            }
+
             var converter = TypeDescriptor.GetConverter(member.Type);
             if (!converter.IsValid(filter.Value))
             {
@@ -38,6 +45,7 @@ namespace DatatableJS.Data
             }
             var propertyValue = converter.ConvertFromInvariantString(filter.Value);
             ConstantExpression constant = Expression.Constant(propertyValue, member.Type);
+            ConstantExpression ignoreCase = Expression.Constant(StringComparison.OrdinalIgnoreCase);
 
             switch (filter.Operand)
             {
@@ -60,7 +68,10 @@ namespace DatatableJS.Data
                     return Expression.LessThanOrEqual(member, constant);
 
                 case Operand.Contains:
-                    return Expression.Call(member, containsMethod, constant);
+                    if (filter.IgnoreCase)
+                        return Expression.Call(member, containsMethodIgnoreCase, constant, ignoreCase);
+                    else
+                        return Expression.Call(member, containsMethod, constant);
 
                 case Operand.StartsWith:
                     return Expression.Call(member, startsWithMethod, constant);

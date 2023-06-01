@@ -41,7 +41,12 @@ namespace DatatableJS.Data
                 foreach (var item in request.columns.Where(a => a.searchable))
                 {
                     ParameterExpression param = Expression.Parameter(typeof(T), "t");
-                    MemberExpression member = Expression.Property(param, item.name);
+                    Expression member = param;
+
+                    foreach (var memberName in item.name.Split('.'))
+                    {
+                        member = Expression.PropertyOrField(member, memberName);
+                    }
                     var operand = member.Type == typeof(string) ? Operand.Contains : Operand.Equal;
                     listExp.Add(new FilterDef { Operand = operand, Field = item.name, Value = request.search.value, Operator = Operator.Or });
                 }
@@ -50,8 +55,12 @@ namespace DatatableJS.Data
             foreach (var item in request.columns.Where(a => a.searchable == true && !string.IsNullOrEmpty(a.search.value)))
             {
                 ParameterExpression param = Expression.Parameter(typeof(T), "t");
-                MemberExpression member = Expression.Property(param, item.name);
-                var operand = member.Type == typeof(string) ? Operand.Contains : Operand.Equal;
+                Expression member = param;
+                foreach (var memberName in item.name.Split('.'))
+                {
+                    member = Expression.PropertyOrField(member, memberName);
+                }
+               var operand = member.Type == typeof(string) ? Operand.Contains : Operand.Equal;
                 listExp.Add(new FilterDef { Operand = operand, Field = item.name, Value = item.search.value, Operator = Operator.And });
             }
 
